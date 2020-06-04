@@ -3,6 +3,7 @@ namespace app\origin\controller;
 
 use think\Controller;
 use think\Db;
+use think\facade\Request;
 
 use app\origin\model\Item;
 
@@ -46,4 +47,112 @@ class Origin extends Controller{
 	public function show_ui(){
 		return $this->fetch();
 	}
+
+	public function test(){
+		// $ip = $this->request->ip();
+        // dump($this->request);
+        // echo "get_ip=>".Origin::get_ip().'</br>';
+        // echo "get_real_ip1=>".Origin::get_real_ip1().'</br>';
+        // echo "get_real_ip2=>".Origin::get_real_ip2().'</br>';
+        // echo "request->ip=>".$ip.'</br>';
+        // echo "fun=>".Item::get_ip();
+        // echo "getIp: ".Origin::getIp().'</br>';
+        // dump(Origin::get_ip());
+        // $time_val = time();
+        // echo "time=".time().'</br>';
+        // echo "time_format=".date('Y-m-d H:i:s',time());;
+        // $str1 = "123321";
+        // echo $str1."=>".'</br>'.sha1($str1).'</br>';
+        // $str2 = "111";
+        // echo $str2."=>".'</br>'.sha1($str2).'</br>';
+		$users = Db::table('lab_admin')->select();
+		echo count($users).'</br>';
+		foreach($users as $user){
+			echo $user['user_no']." ";
+			echo $user['user_name'];
+		}
+	}
+
+	/*
+* 获取用户真实IP地址
+*/
+public function get_ip()
+{
+	if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+	$cip = $_SERVER['HTTP_CLIENT_IP'];
+	}
+	else if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+	$cip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+	}
+	else if(!empty($_SERVER["REMOTE_ADDR"])){
+	$cip = $_SERVER["REMOTE_ADDR"];
+	}else{
+	$cip = '';
+	}
+	preg_match("/[\d\.]{7,15}/", $cip, $cips);
+	$cip = isset($cips[0]) ? $cips[0] : 'unknown';
+	unset($cips);
+	return $cip;
+}
+
+function get_real_ip1(){ 
+	$ip=false; 
+	if(!empty($_SERVER['HTTP_CLIENT_IP'])){ 
+		$ip=$_SERVER['HTTP_CLIENT_IP']; 
+	}
+	if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){ 
+		$ips=explode (', ', $_SERVER['HTTP_X_FORWARDED_FOR']); 
+		if($ip){ array_unshift($ips, $ip); $ip=FALSE; }
+		for ($i=0; $i < count($ips); $i++){
+			if(!preg_match ('/^(10│172.16│192.168)./', $ips[$i])){
+				$ip=$ips[$i];
+				break;
+			}
+		}
+	}
+	return ($ip ? $ip : $_SERVER['REMOTE_ADDR']); 
+}
+
+function get_real_ip2(){
+    static $realip;
+    if(isset($_SERVER)){
+        if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+            $realip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+        }else if(isset($_SERVER['HTTP_CLIENT_IP'])){
+            $realip=$_SERVER['HTTP_CLIENT_IP'];
+        }else{
+            $realip=$_SERVER['REMOTE_ADDR'];
+        }
+    }else{
+        if(getenv('HTTP_X_FORWARDED_FOR')){
+            $realip=getenv('HTTP_X_FORWARDED_FOR');
+        }else if(getenv('HTTP_CLIENT_IP')){
+            $realip=getenv('HTTP_CLIENT_IP');
+        }else{
+            $realip=getenv('REMOTE_ADDR');
+        }
+    }
+    return $realip;
+}
+
+// 获取IP地址（摘自discuz）
+function getIp(){
+	$ip='未知IP';
+	if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+		return is_ip($_SERVER['HTTP_CLIENT_IP'])?$_SERVER['HTTP_CLIENT_IP']:$ip;
+	}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+		return is_ip($_SERVER['HTTP_X_FORWARDED_FOR'])?$_SERVER['HTTP_X_FORWARDED_FOR']:$ip;
+	}else{
+		return is_ip($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:$ip;
+	}
+}
+function is_ip($str){
+	$ip=explode('.',$str);
+	for($i=0;$i<count($ip);$i++){  
+		if($ip[$i]>255){  
+			return false;  
+		}  
+	}  
+	return preg_match('/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/',$str);  
+}
 }

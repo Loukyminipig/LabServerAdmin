@@ -17,7 +17,7 @@ return [
     // 应用名称
     'app_name'               => 'thinkphp5.1-step-by-step',
     // 应用地址
-    'app_host'               => '',
+    'app_host'               => 'thinkphp',
     // 应用调试模式
     'app_debug'              => true,
     // 应用Trace

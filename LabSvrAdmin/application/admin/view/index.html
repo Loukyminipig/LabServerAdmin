@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>实验室快捷服务后台</title>
+  <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+</head>
+<body class="layui-layout-body"  onpageshow="showUser()">
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">KLU 实验室后台</div>
+    <ul class="layui-nav layui-layout-left">
+      <li class="layui-nav-item"><a href="">消息公示</a></li>
+      <li class="layui-nav-item"><a href="">实验室信息</a></li>
+      <li class="layui-nav-item"><a href="">规章制度</a></li>
+      <li class="layui-nav-item">
+        <a href="">用户管理</a>
+        <dl class="layui-nav-child">
+          <dd><a href="">管理员</a></dd>
+          <dd><a href="">普通用户</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item">
+        <a href="javascript:;">其它</a>
+        <dl class="layui-nav-child">
+          <dd><a href="">站内消息</a></dd>
+          <dd><a href="">消息管理</a></dd>
+          <dd><a href="">授权管理</a></dd>
+        </dl>
+      </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;"><P id="user_id"></P></a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <!-- 注意<a>标签中，如需要跳转，必须在相应函数后添加return false -->
+      <li class="layui-nav-item"><a href="" onclick="logout();return false">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+        <li class="layui-nav-item">
+          <a class="" href="javascript:;">实验设备借用</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;">数媒设备</a></dd>
+            <dd><a href="javascript:;">嵌入式设备</a></dd>
+            <dd><a href="javascript:;">智能设备</a></dd>
+            <dd><a href="javascript:;">其他设备</a></dd>
+            <dd><a href="">申请与审批</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">实验室借用</a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;">开放实验室管理</a></dd>
+            <dd><a href="javascript:;">添加开放实验室</a></dd>
+            <dd><a href="">申请与审批</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item"><a href="">设备借用数据分析</a></li>
+        <li class="layui-nav-item"><a href="">实验室开放数据分析</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body">
+     <table id="contain" lay-filter="test"></table>
+  </div>
+  
+  <div class="layui-footer">
+    <!-- 底部固定区域 -->
+    © 作者：李韦鹏&&韦乾来  
+  </div>
+</div>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script type="text/javascript">
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+});
+layui.use('table', function(){
+  var table = layui.table;
+  
+  //第一个实例
+  table.render({
+    elem: '#contain'
+    ,height: 312
+    ,url: 'adminlist' //数据接口
+    ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+      layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+      //,curr: 5 //设定初始在第 5 页
+      ,groups: 3 //只显示 1 个连续页码
+      ,first: false //不显示首页
+      ,last: false //不显示尾页
+      
+    }
+    // ,parseData: function(res){ //res 即为原始返回的数据
+    //   return {
+    //     "code": res.status, //解析接口状态
+    //     "msg": res.message, //解析提示文本
+    //     "count": res.total, //解析数据长度
+    //     "data": res.data.item //解析数据列表
+    //   };
+    // }
+    ,cols: [[ //表头
+      {field: 'id', title: 'ID', sort: true}
+      ,{field: 'name', title: '用户名'}
+      ,{field: 'ip', title: '上次登录IP'}
+      ,{field: 'latest', title: '上次登录时间'} 
+      ,{field: 'greate', title: '账户创建时间'}
+      ,{field: 'update', title: '账户更新时间'}
+    ]]
+  });
+});
+function showUser(){
+  document.getElementById("user_id").innerHTML = ("用户：" + localStorage.getItem("uid"));
+};
+function logout(){
+  localStorage.clear();
+  window.location.href = './admin';
+};
+</script>
+</body>
+</html>

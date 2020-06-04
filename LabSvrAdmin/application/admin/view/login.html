@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>登录页</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome,firefox=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__STATIC__/css/loginstyle.css">
+</head>
+<body>
+    <div class="layui-container">
+        <div class="admin-login-background">
+            <div class="layui-form login-form">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item logo-title">
+                        <h1>KLU实验室管理后台</h1>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-icon layui-icon-username" for="username"></label>
+                        <input type="text" name="username" lay-verify="required|account" 
+                                placeholder="用户名" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-icon layui-icon-password" for="password"></label>
+                        <input type="password" name="password" lay-verify="required|password" 
+                                placeholder="密码" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="login">登 入</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="__STATIC__/layui/layui.all.js"></script>
+    <script src="__STATIC__/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+    <script src="__STATIC__/jq-module/jquery.particleground.min.js" charset="utf-8"></script>
+    <script>
+        layui.use(['form'], function () {
+            var form = layui.form,
+                layer = layui.layer;
+            // 登录过期的时候，跳出ifram框架，注意top和self的区别
+            if (top.location != self.location) top.location = self.location;
+            // 粒子线条背景
+            $(document).ready(function () {
+                $('.layui-container').particleground({
+                    dotColor: '#5cbdaa',
+                    lineColor: '#5cbdaa'
+                });
+            });
+            //通过lay-filter绑定标签login
+            form.on('submit(login)', function (data) {
+                var loading = layer.load(2);
+                var name = $('input[name=username]').val(); //登录成功后需要使用
+                var passwd = $('input[name=password]').val();
+                //console.log("login get in name=" + name + " passwd=" + passwd);
+                $.ajax({
+                    url: 'login',
+                    type: 'post',
+                    data: {
+                        'username': name,
+                        'password': passwd,
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log("login fun get in");
+                        if (res.code == 0) {
+                            layer.close(loading);
+                            layer.msg(res.msg, {
+                                time: 1500
+                            })
+                        } else {
+                            layer.close(loading);
+                            layer.msg(res.msg, {
+                                time: 1500
+                            }, function () {
+                                //当前目录，直接"./"跳转
+                                window.location.href = './home';// "?id=" + name 可以传name
+                                localStorage.setItem("uid", name);
+                            })
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>
