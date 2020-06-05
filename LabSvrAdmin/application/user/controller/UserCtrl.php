@@ -25,4 +25,19 @@ class UserCtrl extends Controller{
 		} 
 		return json(404, '禁止访问', 0, null);
 	}
+
+	public function getDevList(){
+		if($this->request->isGet()){
+			$result = Db::table('lab_dev')->where('dev_type', $this->request->param('type'))->select();
+			$count = count($result);
+			$data = array();
+			for($i=0; $i<$count; $i++){
+				$data[$i]=["id"=>$result[$i]['dev_no']
+				          ,"name"=>$result[$i]['dev_desc']
+				          ,"wait"=>3
+				          ,"available"=>$result[$i]['available_count']];
+			}
+			return json(200, '设备列表', $count, $data);
+		}
+	}
 }
