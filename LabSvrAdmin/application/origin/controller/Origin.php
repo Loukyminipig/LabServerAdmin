@@ -58,19 +58,21 @@ class Origin extends Controller{
         // echo "fun=>".Item::get_ip();
         // echo "getIp: ".Origin::getIp().'</br>';
         // dump(Origin::get_ip());
-        // $time_val = time();
-        // echo "time=".time().'</br>';
+        $time_val = time();
+        echo "time=".time().'</br>';
+        echo date('Y-m-d H:i:s',$time_val );
         // echo "time_format=".date('Y-m-d H:i:s',time());;
         // $str1 = "123321";
         // echo $str1."=>".'</br>'.sha1($str1).'</br>';
         // $str2 = "111";
         // echo $str2."=>".'</br>'.sha1($str2).'</br>';
-		$users = Db::table('lab_admin')->select();
-		echo count($users).'</br>';
-		foreach($users as $user){
-			echo $user['user_no']." ";
-			echo $user['user_name'];
-		}
+		// $users = Db::table('lab_admin')->select();
+		// echo count($users).'</br>';
+		// foreach($users as $user){
+		// 	echo $user['user_no']." ";
+		// 	echo $user['user_name'];
+		// }
+		
 	}
 
 	/*

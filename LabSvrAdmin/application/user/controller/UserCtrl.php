@@ -32,9 +32,12 @@ class UserCtrl extends Controller{
 			$count = count($result);
 			$data = array();
 			for($i=0; $i<$count; $i++){
+				$wait = Db::table('lab_dev_borrowed')
+							->where(['dev_no'=> $result[$i]['dev_no'],
+								     'status'=>0])->select();
 				$data[$i]=["id"=>$result[$i]['dev_no']
 				          ,"name"=>$result[$i]['dev_desc']
-				          ,"wait"=>3
+				          ,"wait"=>count($wait)
 				          ,"available"=>$result[$i]['available_count']];
 			}
 			return json(200, '设备列表', $count, $data);

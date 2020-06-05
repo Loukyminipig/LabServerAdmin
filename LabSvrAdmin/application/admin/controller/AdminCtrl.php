@@ -6,10 +6,6 @@ use think\Db;
 use app\admin\model\Admin;
 
 class AdminCtrl extends Controller{
-	public function hello(){
-		echo "测试路由可用！";
-	}
-
 	public function home(){
 		return $this->fetch("/index");
 	}
