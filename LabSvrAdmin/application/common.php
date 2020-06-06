@@ -10,6 +10,13 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+define('devTitles', [
+   '数媒设备',
+   '嵌入式设备',
+   '智能设备',
+   '其他设备'
+]);
+
 function get_ip(){
     if(!empty($_SERVER['HTTP_CLIENT_IP'])){
         $cip = $_SERVER['HTTP_CLIENT_IP'];
@@ -34,4 +41,11 @@ function json($code,$msg="",$count,$data=array()){
    'data'=>$data
   );
   return json_encode($result, JSON_UNESCAPED_UNICODE);
+}
+
+function getDevTypeStr($type){
+  if($type>=0 && $type<count(devTitles))
+    return devTitles[$type];
+  else
+    return null;
 }

@@ -49,30 +49,8 @@ class Origin extends Controller{
 	}
 
 	public function test(){
-		// $ip = $this->request->ip();
-        // dump($this->request);
-        // echo "get_ip=>".Origin::get_ip().'</br>';
-        // echo "get_real_ip1=>".Origin::get_real_ip1().'</br>';
-        // echo "get_real_ip2=>".Origin::get_real_ip2().'</br>';
-        // echo "request->ip=>".$ip.'</br>';
-        // echo "fun=>".Item::get_ip();
-        // echo "getIp: ".Origin::getIp().'</br>';
-        // dump(Origin::get_ip());
-        $time_val = time();
-        echo "time=".time().'</br>';
-        echo date('Y-m-d H:i:s',$time_val );
-        // echo "time_format=".date('Y-m-d H:i:s',time());;
-        // $str1 = "123321";
-        // echo $str1."=>".'</br>'.sha1($str1).'</br>';
-        // $str2 = "111";
-        // echo $str2."=>".'</br>'.sha1($str2).'</br>';
-		// $users = Db::table('lab_admin')->select();
-		// echo count($users).'</br>';
-		// foreach($users as $user){
-		// 	echo $user['user_no']." ";
-		// 	echo $user['user_name'];
-		// }
-		
+		$index = 0;
+		return getDevTypeStr($index);
 	}
 
 	/*

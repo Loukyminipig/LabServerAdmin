@@ -42,6 +42,7 @@ class UserCtrl extends Controller{
 			}
 			return json(200, '设备列表', $count, $data);
 		}
+		return json(404, '禁止访问', 0, null);
 	}
 
 	public function getBorrowedDevList(){
@@ -53,10 +54,11 @@ class UserCtrl extends Controller{
 			$count = count($result);                          //在通知中知会用户
 			$passCount = count(Db::table('lab_dev_borrowed')->where(['dev_no'=>$no,'status'=>1])->select()); //待取设备数量
 			$data = array();
+			$one_day = 24*60*60;
 			for($i=0; $i<$count; $i++){
 				$info = $result[$i]['user_name'].' '.$result[$i]['user_no'].' '.$result[$i]['user_dept'];
-				$stime = date('Y-m-d',$result[$i]['out_time']);
-				$etime = date('Y-m-d',$result[$i]['out_time'] + $result[$i]['days']*24*60*60);
+				$stime = date('Y-m-d',$result[$i]['out_time']);  //24*60*60 = 86400
+				$etime = date('Y-m-d',$result[$i]['out_time'] + $result[$i]['days'] * 86400);
 				$data[$i]=["id"=>$no
 				          ,"info"=>$info
 				          ,"tel"=>$result[$i]['user_tel']
@@ -65,5 +67,48 @@ class UserCtrl extends Controller{
 			}
 			return json(200, '已借用设备列表', $passCount, $data);
 		}
+		return json(404, '禁止访问', 0, null);
+	}
+
+	public function applyDev(){ //测试的时候需要注意测试数据的学号和姓名不应该是重复的！！！
+		if($this->request->isPost()){
+			$code = 400;
+			$info = "申请失败，已经当前用户存在相同申请";
+			$uno =  $this->request->param('uno');
+			$dno = $this->request->param('dno');
+			$durdate = $this->request->param('durdate');
+			$days = $this->request->param('days');
+			$reason = $this->request->param('reason');
+			$notes = $this->request->param('notes');
+			$data = array();
+			if(UserCtrl::checkDevApply($uno, $dno)){
+				$dev_result = Db::table('lab_dev')->where('dev_no', $dno)->find();
+				$user_result = Db::table('lab_user')->where('user_no', $uno)->find();
+				$code = 401; //用户或者设备不存在
+				$info = "申请失败，用户或者设备不存在";	
+				if($dev_result && $user_result){
+					$data = ['dev_no'=>$dno, 'dev_type'=>$dev_result['dev_type'],
+				    	    'dev_desc'=>$dev_result['dev_desc'], 'status'=>0,
+				        	'apply_time'=>time(), 'user_name'=>$user_result['user_name'],
+				         	'user_no'=>$user_result['user_no'], 'user_dept'=>$user_result['user_dept'],
+				         	'user_tel'=>$user_result['user_tel'], 'days'=>$days, 'reason'=>$reason, 
+				         	'notes'=> ($notes.'@'.$durdate)];
+					$insert_res = Db::table('lab_dev_borrowed')->insert($data);
+					$code = 402; //插入失败
+					$info = "申请上传失败";	
+					if($insert_res == 1){
+						$code = 200;
+						$info = "申请设备成功";
+					}
+				}
+			}
+			return json($code, $info, 0, null);
+		}
+		return json(404, '禁止访问', 0, null);
+	}
+
+	private function checkDevApply($uno, $dno){
+		$result = Db::table('lab_dev_borrowed')->where(['dev_no'=>$dno,'user_no'=>$uno])->select();
+		return $result == null;
 	}
 }
