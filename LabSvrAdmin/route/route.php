@@ -16,3 +16,4 @@ Route::rule('adminlist','admin/Admin_Ctrl/getAdminList','GET');
 
 Route::rule('userlogin','user/User_Ctrl/login','POST');
 Route::rule('getDevList','user/User_Ctrl/getDevList','GET');
+Route::rule('getBoDevList','user/User_Ctrl/getBorrowedDevList','GET');

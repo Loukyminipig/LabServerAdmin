@@ -43,4 +43,27 @@ class UserCtrl extends Controller{
 			return json(200, '设备列表', $count, $data);
 		}
 	}
+
+	public function getBorrowedDevList(){
+		if($this->request->isGet()){
+			$no =  $this->request->param('no');
+			$result = Db::table('lab_dev_borrowed')      //status ：当前申请状态
+							->where(['dev_no'=>$no,      //0->待审 1->通过 2->正借出 3->已还 4->拒绝
+								     'status'=>2])->select(); //仅列出“正借出”设备，通过审核待取设备
+			$count = count($result);                          //在通知中知会用户
+			$passCount = count(Db::table('lab_dev_borrowed')->where(['dev_no'=>$no,'status'=>1])->select()); //待取设备数量
+			$data = array();
+			for($i=0; $i<$count; $i++){
+				$info = $result[$i]['user_name'].' '.$result[$i]['user_no'].' '.$result[$i]['user_dept'];
+				$stime = date('Y-m-d',$result[$i]['out_time']);
+				$etime = date('Y-m-d',$result[$i]['out_time'] + $result[$i]['days']*24*60*60);
+				$data[$i]=["id"=>$no
+				          ,"info"=>$info
+				          ,"tel"=>$result[$i]['user_tel']
+				          ,"stime"=>$stime
+				          ,"etime"=>$etime];
+			}
+			return json(200, '已借用设备列表', $passCount, $data);
+		}
+	}
 }
