@@ -28,11 +28,12 @@ class UserCtrl extends Controller{
 
 	public function getDevList(){
 		if($this->request->isGet()){
-			$result = Db::table('lab_dev')->where('dev_type', $this->request->param('type'))->select();
+			$result = Db::table('lab_dev')->field('dev_no, dev_type, dev_desc, available_count')
+						->where('dev_type', $this->request->param('type'))->select();
 			$count = count($result);
 			$data = array();
 			for($i=0; $i<$count; $i++){
-				$wait = Db::table('lab_dev_borrowed')
+				$wait = Db::table('lab_dev_borrowed')->field('dev_no, status')
 							->where(['dev_no'=> $result[$i]['dev_no'],
 								     'status'=>0])->select();
 				$data[$i]=["id"=>$result[$i]['dev_no']
@@ -54,7 +55,6 @@ class UserCtrl extends Controller{
 			$count = count($result);                          //在通知中知会用户
 			$passCount = count(Db::table('lab_dev_borrowed')->where(['dev_no'=>$no,'status'=>1])->select()); //待取设备数量
 			$data = array();
-			$one_day = 24*60*60;
 			for($i=0; $i<$count; $i++){
 				$info = $result[$i]['user_name'].' '.$result[$i]['user_no'].' '.$result[$i]['user_dept'];
 				$stime = date('Y-m-d',$result[$i]['out_time']);  //24*60*60 = 86400
@@ -87,11 +87,17 @@ class UserCtrl extends Controller{
 				$code = 401; //用户或者设备不存在
 				$info = "申请失败，用户或者设备不存在";	
 				if($dev_result && $user_result){
-					$data = ['dev_no'=>$dno, 'dev_type'=>$dev_result['dev_type'],
-				    	    'dev_desc'=>$dev_result['dev_desc'], 'status'=>0,
-				        	'apply_time'=>time(), 'user_name'=>$user_result['user_name'],
-				         	'user_no'=>$user_result['user_no'], 'user_dept'=>$user_result['user_dept'],
-				         	'user_tel'=>$user_result['user_tel'], 'days'=>$days, 'reason'=>$reason, 
+					$data = ['dev_no'=>$dno,
+							'dev_type'=>$dev_result['dev_type'],
+							'dev_desc'=>$dev_result['dev_desc'],
+				    	    'status'=>0,
+				        	'apply_time'=>time(),
+				        	'user_name'=>$user_result['user_name'],
+				         	'user_no'=>$user_result['user_no'],
+				         	'user_dept'=>$user_result['user_dept'],
+				         	'user_tel'=>$user_result['user_tel'],
+				         	'days'=>$days,
+				         	'reason'=>$reason, 
 				         	'notes'=> ($notes.'@'.$durdate)];
 					$insert_res = Db::table('lab_dev_borrowed')->insert($data);
 					$code = 402; //插入失败
@@ -102,7 +108,7 @@ class UserCtrl extends Controller{
 					}
 				}
 			}
-			return json($code, $info, 0, null);
+			return json($code, $info, 0, $data);
 		}
 		return json(404, '禁止访问', 0, null);
 	}
